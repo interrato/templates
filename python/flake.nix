@@ -1,30 +1,31 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
-    utils.url = "github:numtide/flake-utils";
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs =
+    { nixpkgs, systems, ... }:
+    let
+      eachSystem = nixpkgs.lib.genAttrs (import systems);
+    in
     {
-      self,
-      nixpkgs,
-      utils,
-    }:
-    utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
-        devShell = pkgs.mkShell {
-          name = "python";
-          packages = with pkgs; [
-            (python3.withPackages (python-pkgs: [
-            ]))
-            pyright
-            ruff
-          ];
-        };
-      }
-    );
+      devShells = eachSystem (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            name = "python";
+            packages = with pkgs; [
+              (python3.withPackages (python-pkgs: [
+              ]))
+              pyright
+              ruff
+            ];
+          };
+        }
+      );
+    };
 }

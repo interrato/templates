@@ -14,10 +14,12 @@
             - Run `go run .` to run the project
           '';
         };
+
         python = {
           description = "Python template";
           path = ./python;
         };
+
         rust = {
           description = "Rust template";
           path = ./rust;
@@ -27,6 +29,7 @@
             - Run `cargo run` to run the project
           '';
         };
+
         typst = {
           description = "Typst template";
           path = ./typst;

@@ -1,31 +1,32 @@
 {
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs";
-    utils.url = "github:numtide/flake-utils";
+    systems.url = "github:nix-systems/default-linux";
   };
 
   outputs =
+    { nixpkgs, systems, ... }:
+    let
+      eachSystem = nixpkgs.lib.genAttrs (import systems);
+    in
     {
-      self,
-      nixpkgs,
-      utils,
-    }:
-    utils.lib.eachDefaultSystem (
-      system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-      in
-      {
-        devShell = pkgs.mkShell {
-          name = "go";
-          packages = with pkgs; [
-            go
-            gofumpt
-            gopls
-            gotools
-            go-tools
-          ];
-        };
-      }
-    );
+      devShells = eachSystem (
+        system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
+        {
+          default = pkgs.mkShell {
+            name = "go";
+            packages = with pkgs; [
+              go
+              gofumpt
+              gopls
+              gotools
+              go-tools
+            ];
+          };
+        }
+      );
+    };
 }
