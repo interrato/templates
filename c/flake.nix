@@ -15,16 +15,12 @@
     {
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShellNoCC {
-          env = {
-            CGO_ENABLED = 0;
-            GOASM_INCLUDE_PATH = "${pkgs.go}/share/go/src/runtime";
-          };
-
           packages = with pkgs; [
-            asm-lsp
-            asmfmt
-            go
-            gopls
+            clang
+            clang-tools
+            cppcheck
+            libc
+            libcxx
           ];
         };
       });

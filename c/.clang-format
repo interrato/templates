@@ -1,0 +1,8 @@
+BasedOnStyle: Google
+DerivePointerAlignment: false
+IndentWidth: 8
+KeepEmptyLines:
+  AtEndOfFile: false
+  AtStartOfBlock: false
+  AtStartOfFile: false
+UseTab: Always

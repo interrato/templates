@@ -1,30 +1,26 @@
 {
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
-    systems.url = "github:nix-systems/default-linux";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
   };
 
   outputs =
-    { nixpkgs, systems, ... }:
+    { self, nixpkgs }:
     let
-      eachSystem = nixpkgs.lib.genAttrs (import systems);
+      forAllSystems =
+        packagesFn:
+        nixpkgs.lib.genAttrs nixpkgs.lib.systems.flakeExposed (
+          system: packagesFn nixpkgs.legacyPackages.${system}
+        );
     in
     {
-      devShells = eachSystem (
-        system:
-        let
-          pkgs = nixpkgs.legacyPackages.${system};
-        in
-        {
-          default = pkgs.mkShell {
-            name = "typst";
-            packages = with pkgs; [
-              tinymist
-              typst
-              typstyle
-            ];
-          };
-        }
-      );
+      devShells = forAllSystems (pkgs: {
+        default = pkgs.mkShellNoCC {
+          packages = with pkgs; [
+            tinymist
+            typst
+            typstyle
+          ];
+        };
+      });
     };
 }
